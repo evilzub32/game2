@@ -2,6 +2,9 @@ package hhu.game2;
 
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 public class Main {
     private static void initWindow() {
@@ -13,8 +16,7 @@ public class Main {
         Player player = new Player(PlayField.WIDTH / 2, PlayField.HEIGHT / 2);
         playField.setPlayer(player);
 
-        for (int i = 0; i < 8; i++) {
-            Asteroid asteroid = generateAsteroid();
+        for (Asteroid asteroid : generateAsteroid(8)) {
             playField.addEntity(asteroid);
         }
 
@@ -26,19 +28,26 @@ public class Main {
         window.setVisible(true);
     }
 
-    private static Asteroid generateAsteroid() {
-        int x = (int)(PlayField.WIDTH * Math.random());
-        int y = (int)(PlayField.WIDTH * Math.random());
+    private static List<Asteroid> generateAsteroid(int num) {
+        List<Asteroid> asteroids = new ArrayList<>();
+        Random rand = new Random();
 
-        double turnRate = 0.5 + Math.random() * 2;
-        double velX = 1 + Math.random() * 2;
-        double velY = 1 + Math.random() * 2;
+        for (int i = 0; i < num; i++) {
+            int x = (int) (PlayField.WIDTH * rand.nextDouble());
+            int y = (int) (PlayField.WIDTH * rand.nextDouble());
 
-        Asteroid asteroid = new Asteroid(x, y);
-        asteroid.setTurnRate(turnRate);
-        asteroid.setVelocity(new Vector2(velX, velY));
+            double turnRate = 0.5 + rand.nextDouble() * 2 * (rand.nextBoolean() ? 1 : -1);
+            double velX = 1 + rand.nextDouble() * 2 * (rand.nextBoolean() ? 1 : -1);
+            double velY = 1 + rand.nextDouble() * 2* (rand.nextBoolean() ? 1 : -1);
 
-        return asteroid;
+            Asteroid asteroid = new Asteroid(x, y);
+            asteroid.setTurnRate(turnRate);
+            asteroid.setVelocity(new Vector2(velX, velY));
+
+            asteroids.add(asteroid);
+        }
+
+        return asteroids;
     }
 
     public static void main(String[] args) {

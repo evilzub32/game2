@@ -68,9 +68,7 @@ public class PlayField extends JPanel implements ActionListener {
     }
 
     public void addEntity(Entity entity) {
-        if (!entities.contains(entity)) {
-            entities.add(entity);
-        }
+        entities.add(entity);
     }
 
     public void setPlayer(Player player) {
