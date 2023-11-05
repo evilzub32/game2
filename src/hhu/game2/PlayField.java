@@ -9,8 +9,6 @@ import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,6 +22,7 @@ public class PlayField extends JPanel implements ActionListener {
     // case we need access to it in another method
     private Timer timer;
 
+    private Player player;
     private List<Entity> entities;
 
     public PlayField() {
@@ -39,18 +38,13 @@ public class PlayField extends JPanel implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        for (Entity entity : entities) {
-            entity.update();
-        }
+        player.update();
 
-        for (int i = 0; i < entities.size() - 1; i++) {
-            Entity me = entities.get(i);
-            for (int j = i + 1; j < entities.size(); j++) {
-                Entity other = entities.get(j);
-                if (me.collides(other)) {
-                    me.setCurrentColor(Color.RED);
-                    other.setCurrentColor(Color.RED);
-                }
+        for (Entity other : entities) {
+            other.update();
+            if (player.collides(other)) {
+                player.setCurrentColor(Color.RED);
+                other.setCurrentColor(Color.RED);
             }
         }
 
@@ -60,6 +54,9 @@ public class PlayField extends JPanel implements ActionListener {
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
+
+        handleWrapAround(player);
+        player.draw(g, this);
 
         for (Entity entity : entities) {
             handleWrapAround(entity);
@@ -74,6 +71,11 @@ public class PlayField extends JPanel implements ActionListener {
         if (!entities.contains(entity)) {
             entities.add(entity);
         }
+    }
+
+    public void setPlayer(Player player) {
+        this.player = player;
+        addKeyListener(player);
     }
 
     private void handleWrapAround(Entity entity) {
