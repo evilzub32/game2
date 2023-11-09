@@ -39,12 +39,24 @@ public class PlayField extends JPanel implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         player.update();
-
-        for (Entity other : entities) {
-            other.update();
-            if (player.collides(other)) {
+        for (Entity entity : entities) {
+            entity.update();
+            if (player.collides(entity)) {
                 player.setCurrentColor(Color.RED);
-                other.setCurrentColor(Color.RED);
+                entity.setCurrentColor(Color.RED);
+            }
+        }
+
+        int entityCount = entities.size();
+        for (int i = 0; i < entityCount - 1; i++) {
+            Entity me = entities.get(i);
+            for (int j = i + 1; j < entityCount; j++) {
+                Entity other = entities.get(j);
+                if (me.collides(other)) {
+                    me.collideElastically(other);
+                    me.setCurrentColor(Color.RED);
+                    other.setCurrentColor(Color.RED);
+                }
             }
         }
 
@@ -77,7 +89,7 @@ public class PlayField extends JPanel implements ActionListener {
     }
 
     private void handleWrapAround(Entity entity) {
-        Point p = entity.getPos();
+        Vector2 p = entity.getPos();
         if (p.x > WIDTH) {
             p.x = p.x - WIDTH;
         } else if (p.x < 0) {

@@ -13,15 +13,15 @@ public class Vector2 {
 
     public Vector2 add(Vector2 other) {
         return new Vector2(
-                this.x += other.x,
-                this.y += other.y
+                this.x + other.x,
+                this.y + other.y
         );
     }
 
     public Vector2 sub(Vector2 other) {
         return new Vector2(
-                this.x -= other.x,
-                this.y -= other.y
+                this.x - other.x,
+                this.y - other.y
         );
     }
 
@@ -36,14 +36,26 @@ public class Vector2 {
 
     public Vector2 multiply(double factor) {
         return new Vector2(
-                x * factor,
-                y * factor
+                this.x * factor,
+                this.y * factor
         );
     }
 
     public double magnitude() {
-        return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+        return Math.sqrt(Math.pow(this.x, 2) + Math.pow(this.y, 2));
     };
+
+    public Vector2 normalize() {
+        double factor = 1 / this.magnitude();
+        return new Vector2(
+          this.x * factor,
+          this.y * factor
+        );
+    }
+
+    public double dotProduct(Vector2 other) {
+        return this.x * other.x + this.y * other.y;
+    }
 
     @Override
     public String toString() {

@@ -15,11 +15,13 @@ public abstract class Entity {
 
     private Vector2 velocity;
 
-    private Point pos;
+    private Vector2 pos;
     private List<Vector2> shape;
     private List<Vector2> rotatedShape;
     private Color defaultColor;
     private Color currentColor;
+
+    private double mass = 1;
 
     public Entity(int posX, int posY, List<Vector2> shape) {
         turnRate = 0;
@@ -27,7 +29,7 @@ public abstract class Entity {
 
         velocity = new Vector2(0,0);
 
-        pos = new Point(posX, posY);
+        pos = new Vector2(posX, posY);
 
         this.shape = shape;
         this.rotatedShape = shape;
@@ -51,8 +53,7 @@ public abstract class Entity {
         }
 
         // update position
-        pos.x += velocity.x;
-        pos.y += velocity.y;
+        pos = pos.add(velocity);
 
         update_shape();
 
@@ -88,6 +89,34 @@ public abstract class Entity {
             if (point.y < box.minY) box.minY = point.y;
         }
         return box;
+    }
+
+    public void collideElastically(Entity other) {
+        // Make nomenclature compatible with wikipedia formula
+        // https://en.wikipedia.org/wiki/Elastic_collision#Two-dimensional
+        Vector2 v1 = velocity;
+        Vector2 v2 = other.velocity;
+        Vector2 x1 = pos;
+        Vector2 x2 = other.pos;
+        double m1 = mass;
+        double m2 = other.mass;
+
+        // try to make the formula human-readable by splitting it in parts
+        // calc my new velocity vector
+        double mq1 = (2 * m2) / (m1 + m2);
+        double dotProd1 = v1.sub(v2).dotProduct(x1.sub(x2));
+        double distSquare1 = Math.pow(x1.sub(x2).magnitude(), 2);
+        Vector2 dist1 = x1.sub(x2);
+        Vector2 v1b = v1.sub(dist1.multiply(mq1 * (dotProd1 / distSquare1)));
+        // calc the other's new velocity vector
+        double mq2 = (2 * m1) / (m1 + m2);
+        double dotProd2 = v2.sub(v1).dotProduct(x2.sub(x1));
+        double distSquare2 = Math.pow(x2.sub(x1).magnitude(), 2);
+        Vector2 dist2 = x2.sub(x1);
+        Vector2 v2b = v2.sub(dist2.multiply(mq2 * (dotProd2 / distSquare2)));
+
+        this.velocity = v1b;
+        other.velocity = v2b;
     }
 
     public Color getDefaultColor() {
@@ -134,11 +163,11 @@ public abstract class Entity {
         this.velocity = velocity;
     }
 
-    public Point getPos() {
+    public Vector2 getPos() {
         return pos;
     }
 
-    public void setPos(Point pos) {
+    public void setPos(Vector2 pos) {
         this.pos = pos;
     }
 
