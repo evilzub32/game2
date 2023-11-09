@@ -28,6 +28,8 @@ public class Player extends Entity implements KeyListener {
         thrust = 0;
         isFiring = false;
         shotCountdown = 0;
+
+        setMass(4);
     }
 
     @Override
@@ -93,6 +95,7 @@ public class Player extends Entity implements KeyListener {
         if (super.collides(other)) {
             if (other instanceof Asteroid) {
                 setCurrentColor(Color.RED);
+                collideElastically(other);
             }
         }
     }

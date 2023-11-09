@@ -20,7 +20,7 @@ public abstract class Entity {
     private Color defaultColor;
     private Color currentColor;
 
-    private double mass = 1;
+    private double mass = 10;
 
     private boolean markedForDeletion;
 
@@ -77,7 +77,9 @@ public abstract class Entity {
         rotatedShape = new ArrayList<>();
         for (Vector2 shapePoint : shape) {
             Vector2 rotated = shapePoint.rotate(angle_deg);
+
             rotatedShape.add(new Vector2(pos.x + rotated.x, pos.y + rotated.y));
+
         }
     }
 
@@ -198,5 +200,13 @@ public abstract class Entity {
 
     public void setRotatedShape(List<Vector2> rotatedShape) {
         this.rotatedShape = rotatedShape;
+    }
+
+    public double getMass() {
+        return mass;
+    }
+
+    public void setMass(double mass) {
+        this.mass = mass;
     }
 }

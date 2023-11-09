@@ -14,6 +14,7 @@ public class Shot extends Entity {
                 new Vector2(0, 2) // 4
         ));
         this.liveTime = 0;
+        setMass(2);
     }
 
     public int getLiveTime() {
@@ -39,7 +40,13 @@ public class Shot extends Entity {
 
     @Override
     public void handleCollision(Entity other) {
-
+        if (collides(other)) {
+            if (other instanceof Asteroid) {
+                Shot shot = (Shot) other;
+                shot.shouldBeDeleted();
+                collideElastically(other);
+            }
+        }
     }
 
     public void shouldBeDeleted() {

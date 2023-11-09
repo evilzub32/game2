@@ -29,7 +29,7 @@ public class Asteroid extends Entity {
 
     @Override
     public void handleCollision(Entity other) {
-        if (super.collides(other)) {
+        if (collides(other)) {
             if (other instanceof Asteroid) {
                 collideElastically(other);
             } else if (other instanceof Shot) {

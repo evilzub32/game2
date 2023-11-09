@@ -54,6 +54,7 @@ public class PlayField extends JPanel implements ActionListener {
                 entities.remove(entity);
             } else {
                 entity.update();
+                handleWrapAround(entity);
             }
         }
 
@@ -67,7 +68,6 @@ public class PlayField extends JPanel implements ActionListener {
         super.paintComponent(g);
 
         for (Entity entity : entities) {
-            handleWrapAround(entity);
             entity.draw(g, this);
         }
 
