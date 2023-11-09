@@ -26,4 +26,17 @@ public class Asteroid extends Entity {
     public double getMaxVelocity() {
         return 12;
     }
+
+    @Override
+    public void handleCollision(Entity other) {
+        if (super.collides(other)) {
+            if (other instanceof Asteroid) {
+                collideElastically(other);
+            } else if (other instanceof Shot) {
+                Shot shot = (Shot) other;
+                shot.shouldBeDeleted();
+                collideElastically(other);
+            }
+        }
+    }
 }

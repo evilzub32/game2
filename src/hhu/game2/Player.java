@@ -11,9 +11,11 @@ public class Player extends Entity implements KeyListener {
     private static final double MAX_VELOCITY = 12;
 
     private static final double MAX_SHOTS = 20;
+    private static final int SHOT_INTERVAL = 5;
 
     private double thrust;
     private boolean isFiring;
+    private int shotCountdown;
 
     public Player(double posX, double posY) {
         super(posX, posY, Arrays.asList(
@@ -25,6 +27,7 @@ public class Player extends Entity implements KeyListener {
 
         thrust = 0;
         isFiring = false;
+        shotCountdown = 0;
     }
 
     @Override
@@ -36,6 +39,7 @@ public class Player extends Entity implements KeyListener {
         setVelocity(getVelocity().add(thrustVec));
 
         if (isFiring) fireShot();
+        if (shotCountdown > 0) shotCountdown--;
 
         super.update();
     }
@@ -84,14 +88,26 @@ public class Player extends Entity implements KeyListener {
         }
     }
 
+    @Override
+    public void handleCollision(Entity other) {
+        if (super.collides(other)) {
+            if (other instanceof Asteroid) {
+                setCurrentColor(Color.RED);
+            }
+        }
+    }
+
     private void fireShot() {
-        PlayField playField = PlayField.getInstance();
-        int shotCount = playField.getShotCount();
-        if (shotCount < MAX_SHOTS) {
-            Shot shot = new Shot(this.getPos().x, this.getPos().y);
-            shot.setVelocity(new Vector2(0, -1).rotate(getAngle_deg()).multiply(getVelocity().magnitude() + 10));
-            playField.addEntity(shot);
-            playField.setShotCount(playField.getShotCount() + 1);
+        if (shotCountdown == 0) {
+            PlayField playField = PlayField.getInstance();
+            int shotCount = playField.getShotCount();
+            if (shotCount < SHOT_INTERVAL) {
+                Shot shot = new Shot(this.getPos().x, this.getPos().y);
+                shot.setVelocity(new Vector2(0, -1).rotate(getAngle_deg()).multiply(getVelocity().magnitude() + 10));
+                playField.addEntity(shot);
+                playField.setShotCount(playField.getShotCount() + 1);
+                shotCountdown = SHOT_INTERVAL;
+            }
         }
     }
 }

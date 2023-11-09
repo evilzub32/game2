@@ -3,7 +3,7 @@ package hhu.game2;
 import java.util.Arrays;
 
 public class Shot extends Entity {
-    private static final int ttl = 70;
+    public static final int ttl = 70;
     private int liveTime;
 
     public Shot(double posX, double posY) {
@@ -16,6 +16,14 @@ public class Shot extends Entity {
         this.liveTime = 0;
     }
 
+    public int getLiveTime() {
+        return liveTime;
+    }
+
+    public void setLiveTime(int liveTime) {
+        this.liveTime = liveTime;
+    }
+
     @Override
     public double getMaxVelocity() {
         return 30;
@@ -26,10 +34,17 @@ public class Shot extends Entity {
         super.update();
 
         this.liveTime++;
-        if (this.liveTime >= ttl) {
-            setMarkedForDeletion(true);
-            PlayField playField = PlayField.getInstance();
-            playField.setShotCount(playField.getShotCount() - 1);
-        }
+        if (this.liveTime >= ttl) shouldBeDeleted();
+    }
+
+    @Override
+    public void handleCollision(Entity other) {
+
+    }
+
+    public void shouldBeDeleted() {
+        setMarkedForDeletion(true);
+        PlayField playField = PlayField.getInstance();
+        playField.setShotCount(playField.getShotCount() - 1);
     }
 }

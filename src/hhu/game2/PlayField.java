@@ -21,8 +21,6 @@ public class PlayField extends JPanel implements ActionListener {
     // case we need access to it in another method
     private Timer timer;
 
-    private Player player;
-
     private List<Entity> entities;
 
     private static PlayField playField;
@@ -50,8 +48,6 @@ public class PlayField extends JPanel implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        player.update();
-
         List<Entity> entityList = new ArrayList<>(entities);
         for (Entity entity : entityList) {
             if (entity.isMarkedForDeletion()) {
@@ -70,9 +66,6 @@ public class PlayField extends JPanel implements ActionListener {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        handleWrapAround(player);
-        player.draw(g, this);
-
         for (Entity entity : entities) {
             handleWrapAround(entity);
             entity.draw(g, this);
@@ -84,11 +77,6 @@ public class PlayField extends JPanel implements ActionListener {
 
     public void addEntity(Entity entity) {
         entities.add(entity);
-    }
-
-    public void setPlayer(Player player) {
-        this.player = player;
-        addKeyListener(player);
     }
 
     public int getShotCount() {
@@ -115,20 +103,12 @@ public class PlayField extends JPanel implements ActionListener {
     }
 
     private void detectCollisions() {
-        for (Entity entity : entities) {
-            if (player.collides(entity)) {
-                player.setCurrentColor(Color.RED);
-            }
-        }
-
         int entityCount = entities.size();
         for (int i = 0; i < entityCount - 1; i++) {
             Entity me = entities.get(i);
             for (int j = i + 1; j < entityCount; j++) {
                 Entity other = entities.get(j);
-                if (me.collides(other)) {
-                    me.collideElastically(other);
-                }
+                me.handleCollision(other);
             }
         }
     }

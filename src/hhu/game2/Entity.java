@@ -43,6 +43,8 @@ public abstract class Entity {
 
     public abstract double getMaxVelocity();
 
+    public abstract void handleCollision(Entity other);
+
     public boolean isMarkedForDeletion() {
         return markedForDeletion;
     }

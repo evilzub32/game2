@@ -14,7 +14,7 @@ public class Main {
         PlayField playField = PlayField.getInstance();
 
         Player player = new Player(PlayField.WIDTH / 2, PlayField.HEIGHT / 2);
-        playField.setPlayer(player);
+        playField.addEntity(player);
 
         for (Asteroid asteroid : generateAsteroid(8)) {
             playField.addEntity(asteroid);
