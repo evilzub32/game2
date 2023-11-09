@@ -3,7 +3,6 @@ package hhu.game2;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.image.ImageObserver;
 import java.util.ArrayList;
@@ -23,7 +22,9 @@ public abstract class Entity {
 
     private double mass = 1;
 
-    public Entity(int posX, int posY, List<Vector2> shape) {
+    private boolean markedForDeletion;
+
+    public Entity(double posX, double posY, List<Vector2> shape) {
         turnRate = 0;
         angle_deg = 0;
 
@@ -36,9 +37,19 @@ public abstract class Entity {
 
         this.defaultColor = Color.WHITE;
         this.currentColor = defaultColor;
+
+        this.markedForDeletion = false;
     }
 
     public abstract double getMaxVelocity();
+
+    public boolean isMarkedForDeletion() {
+        return markedForDeletion;
+    }
+
+    public void setMarkedForDeletion(boolean markedForDeletion) {
+        this.markedForDeletion = markedForDeletion;
+    }
 
     public void update() {
         angle_deg += turnRate;

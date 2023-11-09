@@ -4,7 +4,7 @@ import java.awt.Color;
 import java.util.Arrays;
 
 public class Asteroid extends Entity {
-    public Asteroid(int posX, int posY) {
+    public Asteroid(double posX, double posY) {
         super(posX, posY, Arrays.asList(
                 new Vector2(-20., -40.), // 1
                 new Vector2(20., -40.), // 2

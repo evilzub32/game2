@@ -18,6 +18,13 @@ public class Vector2 {
         );
     }
 
+    public Vector2 add(double num) {
+        return new Vector2(
+                this.x + num,
+                this.y + num
+        );
+    }
+
     public Vector2 sub(Vector2 other) {
         return new Vector2(
                 this.x - other.x,

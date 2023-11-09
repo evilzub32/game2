@@ -11,7 +11,7 @@ public class Main {
         JFrame window = new JFrame("Game 2");
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        PlayField playField = new PlayField();
+        PlayField playField = PlayField.getInstance();
 
         Player player = new Player(PlayField.WIDTH / 2, PlayField.HEIGHT / 2);
         playField.setPlayer(player);
@@ -33,16 +33,17 @@ public class Main {
         Random rand = new Random();
 
         for (int i = 0; i < num; i++) {
-            int x = (int) (PlayField.WIDTH * rand.nextDouble());
-            int y = (int) (PlayField.WIDTH * rand.nextDouble());
+            double x = PlayField.WIDTH * rand.nextDouble();
+            double y = PlayField.WIDTH * rand.nextDouble();
 
-            double turnRate = 0;
+//            double turnRate = 0.5 + Math.random() * 2;;
             double angle_deg = rand.nextDouble() * 360;
+
             double velX = 1 + rand.nextDouble() * 2 * (rand.nextBoolean() ? 1 : -1);
             double velY = 1 + rand.nextDouble() * 2 * (rand.nextBoolean() ? 1 : -1);
 
             Asteroid asteroid = new Asteroid(x, y);
-            asteroid.setTurnRate(turnRate);
+//            asteroid.setTurnRate(turnRate);
             asteroid.setAngle_deg(angle_deg);
             asteroid.setVelocity(new Vector2(velX, velY));
 

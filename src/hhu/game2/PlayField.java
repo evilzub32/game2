@@ -5,7 +5,6 @@ import javax.swing.Timer;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -23,42 +22,46 @@ public class PlayField extends JPanel implements ActionListener {
     private Timer timer;
 
     private Player player;
+
     private List<Entity> entities;
 
-    public PlayField() {
+    private static PlayField playField;
+
+    private int shotCount;
+
+    private PlayField() {
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
         setBackground(Color.BLACK);
 
         entities = new ArrayList<>();
+        shotCount = 0;
 
         // this timer will call the actionPerformed() method every DELAY ms
         timer = new Timer(DELAY, this);
         timer.start();
     }
 
+    public static PlayField getInstance() {
+        if (null == PlayField.playField) {
+            PlayField.playField = new PlayField();
+        }
+        return PlayField.playField;
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
         player.update();
-        for (Entity entity : entities) {
-            entity.update();
-            if (player.collides(entity)) {
-                player.setCurrentColor(Color.RED);
-                entity.setCurrentColor(Color.RED);
+
+        List<Entity> entityList = new ArrayList<>(entities);
+        for (Entity entity : entityList) {
+            if (entity.isMarkedForDeletion()) {
+                entities.remove(entity);
+            } else {
+                entity.update();
             }
         }
 
-        int entityCount = entities.size();
-        for (int i = 0; i < entityCount - 1; i++) {
-            Entity me = entities.get(i);
-            for (int j = i + 1; j < entityCount; j++) {
-                Entity other = entities.get(j);
-                if (me.collides(other)) {
-                    me.collideElastically(other);
-                    me.setCurrentColor(Color.RED);
-                    other.setCurrentColor(Color.RED);
-                }
-            }
-        }
+        detectCollisions();
 
         repaint();
     }
@@ -88,6 +91,14 @@ public class PlayField extends JPanel implements ActionListener {
         addKeyListener(player);
     }
 
+    public int getShotCount() {
+        return shotCount;
+    }
+
+    public void setShotCount(int shotCount) {
+        this.shotCount = shotCount;
+    }
+
     private void handleWrapAround(Entity entity) {
         Vector2 p = entity.getPos();
         if (p.x > WIDTH) {
@@ -100,6 +111,25 @@ public class PlayField extends JPanel implements ActionListener {
             p.y = p.y - HEIGHT;
         } else if (p.y < 0) {
             p.y = HEIGHT + p.y;
+        }
+    }
+
+    private void detectCollisions() {
+        for (Entity entity : entities) {
+            if (player.collides(entity)) {
+                player.setCurrentColor(Color.RED);
+            }
+        }
+
+        int entityCount = entities.size();
+        for (int i = 0; i < entityCount - 1; i++) {
+            Entity me = entities.get(i);
+            for (int j = i + 1; j < entityCount; j++) {
+                Entity other = entities.get(j);
+                if (me.collides(other)) {
+                    me.collideElastically(other);
+                }
+            }
         }
     }
 }

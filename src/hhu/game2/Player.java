@@ -10,9 +10,12 @@ public class Player extends Entity implements KeyListener {
     private static final double TURN_RATE = 8.0;
     private static final double MAX_VELOCITY = 12;
 
-    private double thrust;
+    private static final double MAX_SHOTS = 20;
 
-    public Player(int posX, int posY) {
+    private double thrust;
+    private boolean isFiring;
+
+    public Player(double posX, double posY) {
         super(posX, posY, Arrays.asList(
                 new Vector2(0, -20),
                 new Vector2(15, 20),
@@ -21,7 +24,7 @@ public class Player extends Entity implements KeyListener {
         setDefaultColor(Color.YELLOW);
 
         thrust = 0;
-
+        isFiring = false;
     }
 
     @Override
@@ -31,6 +34,8 @@ public class Player extends Entity implements KeyListener {
 
         // add thrust to velocity
         setVelocity(getVelocity().add(thrustVec));
+
+        if (isFiring) fireShot();
 
         super.update();
     }
@@ -58,6 +63,9 @@ public class Player extends Entity implements KeyListener {
         else if (key == KeyEvent.VK_RIGHT)  {
             setTurnRate(TURN_RATE);
         }
+        else if (key == KeyEvent.VK_SPACE) {
+            isFiring = true;
+        }
         else if (key == KeyEvent.VK_ESCAPE) {
             System.exit(0);
         }
@@ -71,6 +79,19 @@ public class Player extends Entity implements KeyListener {
             thrust = 0;
         } else if (key == KeyEvent.VK_LEFT || key == KeyEvent.VK_RIGHT) {
             setTurnRate(0);
+        } else if (key == KeyEvent.VK_SPACE) {
+            isFiring = false;
+        }
+    }
+
+    private void fireShot() {
+        PlayField playField = PlayField.getInstance();
+        int shotCount = playField.getShotCount();
+        if (shotCount < MAX_SHOTS) {
+            Shot shot = new Shot(this.getPos().x, this.getPos().y);
+            shot.setVelocity(new Vector2(0, -1).rotate(getAngle_deg()).multiply(getVelocity().magnitude() + 10));
+            playField.addEntity(shot);
+            playField.setShotCount(playField.getShotCount() + 1);
         }
     }
 }
