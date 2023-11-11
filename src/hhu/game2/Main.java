@@ -16,7 +16,7 @@ public class Main {
         Player player = new Player(PlayField.WIDTH / 2, PlayField.HEIGHT / 2);
         playField.addEntity(player);
 
-        for (Asteroid asteroid : generateAsteroid(8)) {
+        for (Asteroid asteroid : generateAsteroid(8, Asteroid.Size.LARGE)) {
             playField.addEntity(asteroid);
         }
 
@@ -28,7 +28,7 @@ public class Main {
         window.setVisible(true);
     }
 
-    private static List<Asteroid> generateAsteroid(int num) {
+    private static List<Asteroid> generateAsteroid(int num, Asteroid.Size size) {
         List<Asteroid> asteroids = new ArrayList<>();
         Random rand = new Random();
 
@@ -42,11 +42,10 @@ public class Main {
             double velX = 1 + rand.nextDouble() * 2 * (rand.nextBoolean() ? 1 : -1);
             double velY = 1 + rand.nextDouble() * 2 * (rand.nextBoolean() ? 1 : -1);
 
-            Asteroid asteroid = new Asteroid(x, y);
+            Asteroid asteroid = new Asteroid(x, y, size);
 //            asteroid.setTurnRate(turnRate);
             asteroid.setAngle_deg(angle_deg);
             asteroid.setVelocity(new Vector2(velX, velY));
-            asteroid.setMass(5 + Math.random() * 5);
             asteroids.add(asteroid);
         }
 
