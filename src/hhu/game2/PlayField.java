@@ -19,9 +19,9 @@ public class PlayField extends JPanel implements ActionListener {
 
     // keep a reference to the timer object that triggers actionPerformed() in
     // case we need access to it in another method
-    private Timer timer;
+    private final Timer timer;
 
-    private List<Entity> entities;
+    private final List<Entity> entities;
 
     private static PlayField playField;
 
@@ -76,6 +76,7 @@ public class PlayField extends JPanel implements ActionListener {
     }
 
     public void addEntity(Entity entity) {
+        entity.update();
         entities.add(entity);
     }
 

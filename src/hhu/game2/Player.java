@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.Arrays;
+import java.util.List;
 
 public class Player extends Entity implements KeyListener {
     private static final double MAX_THRUST = 0.4;
@@ -18,11 +19,7 @@ public class Player extends Entity implements KeyListener {
     private int shotCountdown;
 
     public Player(double posX, double posY) {
-        super(posX, posY, Arrays.asList(
-                new Vector2(0, -20),
-                new Vector2(15, 20),
-                new Vector2(-15, 20)
-        ));
+        super(posX, posY);
         setDefaultColor(Color.YELLOW);
 
         thrust = 0;
@@ -49,6 +46,15 @@ public class Player extends Entity implements KeyListener {
     @Override
     public double getMaxVelocity() {
         return MAX_VELOCITY;
+    }
+
+    @Override
+    public List<Vector2> getShape() {
+        return Arrays.asList(
+                new Vector2(0, -20),
+                new Vector2(15, 20),
+                new Vector2(-15, 20)
+        );
     }
 
     @Override

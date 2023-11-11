@@ -1,18 +1,14 @@
 package hhu.game2;
 
 import java.util.Arrays;
+import java.util.List;
 
 public class Shot extends Entity {
     public static final int ttl = 70;
     private int liveTime;
 
     public Shot(double posX, double posY) {
-        super(posX, posY, Arrays.asList(
-                new Vector2(0, 0), // 1
-                new Vector2(2, 0), // 2
-                new Vector2(2, 2), // 3
-                new Vector2(0, 2) // 4
-        ));
+        super(posX, posY);
         this.liveTime = 0;
         setMass(2);
     }
@@ -47,6 +43,16 @@ public class Shot extends Entity {
                 collideElastically(other);
             }
         }
+    }
+
+    @Override
+    public List<Vector2> getShape() {
+        return Arrays.asList(
+                new Vector2(0, 0), // 1
+                new Vector2(2, 0), // 2
+                new Vector2(2, 2), // 3
+                new Vector2(0, 2) // 4
+        );
     }
 
     public void shouldBeDeleted() {

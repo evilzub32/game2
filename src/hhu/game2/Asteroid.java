@@ -1,24 +1,14 @@
 package hhu.game2;
 
 import java.awt.Color;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Asteroid extends Entity {
-    public Asteroid(double posX, double posY) {
-        super(posX, posY, Arrays.asList(
-                new Vector2(-20., -40.), // 1
-                new Vector2(20., -40.), // 2
-                new Vector2(40., -6.), // 3
-                new Vector2(8., 6.), // 4
-                new Vector2(16., 40.), // 5
-                new Vector2(-24., 34.), // 6
-                new Vector2(-26., 6.), // 7
-                new Vector2(-40., 4.), // 8
-                new Vector2(-40., -20.) // 9
-        ));
+    private List<Vector2> shape;
 
-        setVelocity(new Vector2(1, 1));
-        setTurnRate(0.4);
+    public Asteroid(double posX, double posY) {
+        super(posX, posY);
         setDefaultColor(Color.GRAY);
     }
 
@@ -32,11 +22,31 @@ public class Asteroid extends Entity {
         if (collides(other)) {
             if (other instanceof Asteroid) {
                 collideElastically(other);
-            } else if (other instanceof Shot) {
-                Shot shot = (Shot) other;
+            } else if (other instanceof Shot shot) {
                 shot.shouldBeDeleted();
                 collideElastically(other);
             }
         }
+    }
+
+    @Override
+    public List<Vector2> getShape() {
+        if (null == shape) {
+            shape = new ArrayList<>();
+
+            int maxNodes = 10;
+            double step = 360 / maxNodes;
+            double r = 5 * getMass();
+            System.out.println(r);
+
+            for (int i = 0; i < 10; i++) {
+                double deg = i * step;
+                double sigma = Math.toRadians(i * step);
+                double x = r * Math.sin(sigma);
+                double y = r * Math.cos(sigma);
+                shape.add(new Vector2(x, y));
+            }
+        }
+        return shape;
     }
 }

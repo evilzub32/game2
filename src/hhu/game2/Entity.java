@@ -15,7 +15,6 @@ public abstract class Entity {
     private Vector2 velocity;
 
     private Vector2 pos;
-    private List<Vector2> shape;
     private List<Vector2> rotatedShape;
     private Color defaultColor;
     private Color currentColor;
@@ -24,16 +23,13 @@ public abstract class Entity {
 
     private boolean markedForDeletion;
 
-    public Entity(double posX, double posY, List<Vector2> shape) {
+    public Entity(double posX, double posY) {
         turnRate = 0;
         angle_deg = 0;
 
         velocity = new Vector2(0,0);
 
         pos = new Vector2(posX, posY);
-
-        this.shape = shape;
-        this.rotatedShape = shape;
 
         this.defaultColor = Color.WHITE;
         this.currentColor = defaultColor;
@@ -44,6 +40,8 @@ public abstract class Entity {
     public abstract double getMaxVelocity();
 
     public abstract void handleCollision(Entity other);
+
+    public abstract List<Vector2> getShape();
 
     public boolean isMarkedForDeletion() {
         return markedForDeletion;
@@ -75,11 +73,10 @@ public abstract class Entity {
 
     private void update_shape() {
         rotatedShape = new ArrayList<>();
-        for (Vector2 shapePoint : shape) {
+        for (Vector2 shapePoint : getShape()) {
             Vector2 rotated = shapePoint.rotate(angle_deg);
 
             rotatedShape.add(new Vector2(pos.x + rotated.x, pos.y + rotated.y));
-
         }
     }
 
@@ -113,8 +110,8 @@ public abstract class Entity {
         Vector2 v2 = other.velocity;
         Vector2 x1 = pos;
         Vector2 x2 = other.pos;
-        double m1 = mass;
-        double m2 = other.mass;
+        double m1 = getMass();
+        double m2 = other.getMass();
 
         // try to make the formula human-readable by splitting it in parts
         // calc my new velocity vector
@@ -184,14 +181,6 @@ public abstract class Entity {
 
     public void setPos(Vector2 pos) {
         this.pos = pos;
-    }
-
-    public List<Vector2> getShape() {
-        return shape;
-    }
-
-    public void setShape(List<Vector2> shape) {
-        this.shape = shape;
     }
 
     public List<Vector2> getRotatedShape() {

@@ -46,7 +46,7 @@ public class Main {
 //            asteroid.setTurnRate(turnRate);
             asteroid.setAngle_deg(angle_deg);
             asteroid.setVelocity(new Vector2(velX, velY));
-
+            asteroid.setMass(5 + Math.random() * 5);
             asteroids.add(asteroid);
         }
 

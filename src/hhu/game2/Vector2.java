@@ -50,7 +50,7 @@ public class Vector2 {
 
     public double magnitude() {
         return Math.sqrt(Math.pow(this.x, 2) + Math.pow(this.y, 2));
-    };
+    }
 
     public Vector2 normalize() {
         double factor = 1 / this.magnitude();
