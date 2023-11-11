@@ -3,6 +3,7 @@ package hhu.game2;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class Asteroid extends Entity {
     private List<Vector2> shape;
@@ -32,18 +33,19 @@ public class Asteroid extends Entity {
     @Override
     public List<Vector2> getShape() {
         if (null == shape) {
+            Random rand = new Random();
             shape = new ArrayList<>();
 
-            int maxNodes = 10;
-            double step = 360 / maxNodes;
+            int maxNodes = 6;
+            double step = 360d / maxNodes;
             double r = 5 * getMass();
             System.out.println(r);
 
-            for (int i = 0; i < 10; i++) {
+            for (int i = 0; i < maxNodes; i++) {
                 double deg = i * step;
-                double sigma = Math.toRadians(i * step);
-                double x = r * Math.sin(sigma);
-                double y = r * Math.cos(sigma);
+                double sigma = Math.toRadians(deg);
+                double x = r * Math.sin(sigma) + rand.nextDouble(10) * (rand.nextBoolean() ? 1 : -1);
+                double y = r * Math.cos(sigma) + rand.nextDouble(10) * (rand.nextBoolean() ? 1 : -1);
                 shape.add(new Vector2(x, y));
             }
         }
