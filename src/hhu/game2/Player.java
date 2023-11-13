@@ -78,9 +78,6 @@ public class Player extends Entity implements KeyListener {
         else if (key == KeyEvent.VK_SPACE) {
             isFiring = true;
         }
-        else if (key == KeyEvent.VK_ESCAPE) {
-            System.exit(0);
-        }
     }
 
     @Override
@@ -100,7 +97,6 @@ public class Player extends Entity implements KeyListener {
     public void handleCollision(Entity other) {
         if (super.collides(other)) {
             if (other instanceof Asteroid) {
-                setCurrentColor(Color.RED);
                 collideElastically(other);
             }
         }

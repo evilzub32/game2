@@ -1,26 +1,36 @@
 package hhu.game2;
 
-import java.awt.Point;
-
 public class BoundingBox {
-    public double maxX;
-    public double maxY;
-    public double minX;
-    public double minY;
+    public double rightX;
+    public double lowerY;
+    public double leftX;
+    public double upperY;
 
     public BoundingBox() {
-        maxX = Double.MIN_VALUE;
-        maxY = Double.MIN_VALUE;
-        minX = Double.MAX_VALUE;
-        minY = Double.MAX_VALUE;
+        // guarantee that real world values are always bigger or lower than initial values
+        rightX = Double.MIN_VALUE;
+        lowerY = Double.MIN_VALUE;
+        leftX = Double.MAX_VALUE;
+        upperY = Double.MAX_VALUE;
+    }
+
+    public boolean isAbove(BoundingBox other) {
+        return lowerY < other.upperY;
+    }
+
+    public boolean isBelow(BoundingBox other) {
+        return upperY > other.lowerY;
+    }
+
+    public boolean isLeft(BoundingBox other) {
+        return rightX < other.leftX;
+    }
+
+    public boolean isRight(BoundingBox other) {
+        return leftX > other.rightX;
     }
 
     public boolean collides(BoundingBox other) {
-        boolean isAbove = maxY < other.minY;
-        boolean isBelow = minY > other.maxY;
-        boolean isLeft = maxX < other.minX;
-        boolean isRight = minX > other.maxX;
-
-        return !(isAbove || isBelow || isLeft || isRight);
+        return !(isAbove(other) || isBelow(other) || isLeft(other) || isRight(other));
     }
 }

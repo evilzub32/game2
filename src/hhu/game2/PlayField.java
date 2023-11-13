@@ -8,10 +8,12 @@ import java.awt.Graphics;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PlayField extends JPanel implements ActionListener {
+public class PlayField extends JPanel implements ActionListener, KeyListener {
     private final int DELAY = 25;
 
     public static final int WIDTH = 1400;
@@ -27,12 +29,18 @@ public class PlayField extends JPanel implements ActionListener {
 
     private int shotCount;
 
+    private boolean showVelocity;
+    private boolean showBoundingBox;
+
     private PlayField() {
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
         setBackground(Color.BLACK);
 
         entities = new ArrayList<>();
         shotCount = 0;
+
+        showVelocity = false;
+        showBoundingBox = false;
 
         // this timer will call the actionPerformed() method every DELAY ms
         timer = new Timer(DELAY, this);
@@ -68,7 +76,7 @@ public class PlayField extends JPanel implements ActionListener {
         super.paintComponent(g);
 
         for (Entity entity : entities) {
-            entity.draw(g, this);
+            entity.draw(g, showBoundingBox, showVelocity);
         }
 
         // this smooths out animations on some systems
@@ -112,5 +120,34 @@ public class PlayField extends JPanel implements ActionListener {
                 me.handleCollision(other);
             }
         }
+    }
+
+    @Override
+    public void keyTyped(KeyEvent e) {
+
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        int key = e.getKeyCode();
+
+        if (key == KeyEvent.VK_ESCAPE) {
+            System.exit(0);
+        } else if (key == KeyEvent.VK_P) {
+            if (timer.isRunning()) {
+                timer.stop();
+            } else {
+                timer.start();
+            }
+        } else if (key == KeyEvent.VK_F1) {
+            showBoundingBox = !showBoundingBox;
+        } else if (key == KeyEvent.VK_F2) {
+            showVelocity = !showVelocity;
+        }
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+
     }
 }

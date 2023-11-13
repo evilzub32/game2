@@ -22,6 +22,7 @@ public class Main {
 
         window.add(playField);
         window.addKeyListener(player);
+        window.addKeyListener(playField);
         window.setResizable(false);
         window.pack();
         window.setLocationRelativeTo(null);

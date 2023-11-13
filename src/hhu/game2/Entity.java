@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
+import java.awt.geom.Line2D;
 import java.awt.image.ImageObserver;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,13 +16,17 @@ public abstract class Entity {
     private Vector2 velocity;
 
     private Vector2 pos;
+    private List<Vector2> shape;
     private List<Vector2> rotatedShape;
+
     private Color defaultColor;
     private Color currentColor;
 
     private double mass = 10;
 
     private boolean markedForDeletion;
+
+    private int lastCollisionTick;
 
     public Entity(double posX, double posY) {
         turnRate = 0;
@@ -35,13 +40,13 @@ public abstract class Entity {
         this.currentColor = defaultColor;
 
         this.markedForDeletion = false;
+
+        this.lastCollisionTick = 0;
     }
 
     public abstract double getMaxVelocity();
 
     public abstract void handleCollision(Entity other);
-
-    public abstract List<Vector2> getShape();
 
     public boolean isMarkedForDeletion() {
         return markedForDeletion;
@@ -69,6 +74,10 @@ public abstract class Entity {
         update_shape();
 
         currentColor = defaultColor;
+
+        if (lastCollisionTick > 0) {
+            lastCollisionTick--;
+        }
     }
 
     private void update_shape() {
@@ -80,7 +89,7 @@ public abstract class Entity {
         }
     }
 
-    public void draw(Graphics g, ImageObserver observer) {
+    public void draw(Graphics g, boolean showBoundingBox, boolean showVelocity) {
         Graphics2D g2d = (Graphics2D) g;
 
         Polygon polygon = new Polygon();
@@ -90,15 +99,30 @@ public abstract class Entity {
 
         g2d.setColor(currentColor);
         g2d.draw(polygon);
+
+        if (showBoundingBox) {
+            polygon = new Polygon();
+            polygon.addPoint((int) getBoundingBox().leftX, (int) getBoundingBox().lowerY);
+            polygon.addPoint((int) getBoundingBox().rightX, (int) getBoundingBox().lowerY);
+            polygon.addPoint((int) getBoundingBox().rightX, (int) getBoundingBox().upperY);
+            polygon.addPoint((int) getBoundingBox().leftX, (int) getBoundingBox().upperY);
+            g2d.setColor(Color.GRAY);
+            g2d.draw(polygon);
+        }
+
+        if (showVelocity) {
+            g2d.setColor(Color.YELLOW);
+            g2d.drawLine((int) pos.x, (int) pos.y, (int) (pos.x + velocity.x * 10), (int) (pos.y + velocity.y * 10));
+        }
     }
 
     public BoundingBox getBoundingBox() {
         BoundingBox box = new BoundingBox();
         for (Vector2 point : rotatedShape) {
-            if (point.x > box.maxX) box.maxX = point.x;
-            if (point.x < box.minX) box.minX = point.x;
-            if (point.y > box.maxY) box.maxY = point.y;
-            if (point.y < box.minY) box.minY = point.y;
+            if (point.x > box.rightX) box.rightX = point.x;
+            if (point.x < box.leftX) box.leftX = point.x;
+            if (point.y > box.lowerY) box.lowerY = point.y;
+            if (point.y < box.upperY) box.upperY = point.y;
         }
         return box;
     }
@@ -129,30 +153,56 @@ public abstract class Entity {
 
         this.velocity = v1b;
         other.velocity = v2b;
-    }
 
-    public Color getDefaultColor() {
-        return defaultColor;
+        // Overlapping entities will stick together, so ensure entities are not overlapping.
+        // TODO: Simplify
+        BoundingBox myBB = getBoundingBox();
+        BoundingBox otherBB = other.getBoundingBox();
+
+        boolean intersectsFromAbove = myBB.upperY < otherBB.lowerY && myBB.lowerY > otherBB.lowerY;
+        boolean intersectsFromBelow = myBB.lowerY > otherBB.upperY && myBB.lowerY < otherBB.lowerY;
+        boolean intersectsFromLeft = myBB.leftX < otherBB.rightX && myBB.rightX > otherBB.rightX;
+        boolean intersectsFromRight = myBB.rightX > otherBB.leftX && myBB.leftX < otherBB.leftX;
+
+        Vector2 oPos = other.pos;
+        if (intersectsFromAbove && intersectsFromLeft) {
+            double diffY = otherBB.lowerY - myBB.upperY;
+            double diffX = otherBB.rightX - myBB.leftX;
+            if (diffY > diffX) oPos.x -= diffX;
+            else oPos.y -= diffY;
+        } else if (intersectsFromAbove && intersectsFromRight) {
+            double diffY = otherBB.lowerY - myBB.upperY;
+            double diffX = myBB.rightX - otherBB.leftX;
+            if (diffY > diffX) oPos.x += diffX;
+            else oPos.y -= diffY;
+        } else if (intersectsFromBelow && intersectsFromLeft) {
+            double diffY = myBB.lowerY - otherBB.upperY;
+            double diffX = otherBB.rightX - myBB.leftX;
+            if (diffY > diffX) oPos.x -= diffX;
+            else oPos.y += diffY;
+        } else if (intersectsFromBelow && intersectsFromRight) {
+            double diffY = myBB.lowerY - otherBB.upperY;
+            double diffX = myBB.rightX - otherBB.leftX;
+            if (diffY > diffX) oPos.x += diffX;
+            else oPos.y += diffY;
+        }
     }
 
     public void setDefaultColor(Color defaultColor) {
         this.defaultColor = defaultColor;
     }
 
-    public Color getCurrentColor() {
-        return currentColor;
-    }
-
-    public void setCurrentColor(Color currentColor) {
-        this.currentColor = currentColor;
-    }
-
     public boolean collides(Entity other) {
-        return getBoundingBox().collides(other.getBoundingBox());
-    }
-
-    public double getTurnRate() {
-        return turnRate;
+        if (getBoundingBox().collides(other.getBoundingBox())) {
+            // Grace period after collision to avoid colliding with the same object multiple times successively
+            if (lastCollisionTick > 0 || other.lastCollisionTick > 0) {
+                return false;
+            } else {
+                lastCollisionTick = 5;
+                return true;
+            }
+        }
+        return false;
     }
 
     public void setTurnRate(double turnRate) {
@@ -179,16 +229,8 @@ public abstract class Entity {
         return pos;
     }
 
-    public void setPos(Vector2 pos) {
-        this.pos = pos;
-    }
-
     public List<Vector2> getRotatedShape() {
         return rotatedShape;
-    }
-
-    public void setRotatedShape(List<Vector2> rotatedShape) {
-        this.rotatedShape = rotatedShape;
     }
 
     public double getMass() {
@@ -197,5 +239,13 @@ public abstract class Entity {
 
     public void setMass(double mass) {
         this.mass = mass;
+    }
+
+    public List<Vector2> getShape() {
+        return shape;
+    }
+
+    public void setShape(List<Vector2> shape) {
+        this.shape = shape;
     }
 }
