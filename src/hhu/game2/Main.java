@@ -16,7 +16,7 @@ public class Main {
         Player player = new Player(PlayField.WIDTH / 2, PlayField.HEIGHT / 2);
         playField.addEntity(player);
 
-        for (Asteroid asteroid : generateAsteroid(8, Asteroid.Size.LARGE)) {
+        for (Asteroid asteroid : generateAsteroid(6, Asteroid.Size.LARGE)) {
             playField.addEntity(asteroid);
         }
 
@@ -37,15 +37,10 @@ public class Main {
             double x = PlayField.WIDTH * rand.nextDouble();
             double y = PlayField.WIDTH * rand.nextDouble();
 
-            double turnRate = 0.5 + Math.random() * 2;;
-            double angle_deg = rand.nextDouble() * 360;
-
             double velX = 1 + rand.nextDouble() * 2 * (rand.nextBoolean() ? 1 : -1);
             double velY = 1 + rand.nextDouble() * 2 * (rand.nextBoolean() ? 1 : -1);
 
             Asteroid asteroid = new Asteroid(x, y, size);
-            asteroid.setTurnRate(turnRate);
-            asteroid.setAngle_deg(angle_deg);
             asteroid.setVelocity(new Vector2(velX, velY));
             asteroids.add(asteroid);
         }

@@ -57,6 +57,7 @@ public class PlayField extends JPanel implements ActionListener, KeyListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         List<Entity> entityList = new ArrayList<>(entities);
+
         for (Entity entity : entityList) {
             if (entity.isMarkedForDeletion()) {
                 entities.remove(entity);
@@ -67,7 +68,6 @@ public class PlayField extends JPanel implements ActionListener, KeyListener {
         }
 
         detectCollisions();
-
         repaint();
     }
 

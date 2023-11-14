@@ -37,10 +37,9 @@ public class Shot extends Entity {
     @Override
     public void handleCollision(Entity other) {
         if (collides(other)) {
-            if (other instanceof Asteroid) {
-                Shot shot = (Shot) other;
-                shot.shouldBeDeleted();
-                collideElastically(other);
+            if (other instanceof Asteroid asteroid) {
+                asteroid.explode(getVelocity().normalize());
+                shouldBeDeleted();
             }
         }
     }
@@ -48,7 +47,7 @@ public class Shot extends Entity {
     @Override
     public List<Vector2> getShape() {
         return Arrays.asList(
-                new Vector2(0, 0), // 1
+                new Vector2(), // 1
                 new Vector2(2, 0), // 2
                 new Vector2(2, 2), // 3
                 new Vector2(0, 2) // 4

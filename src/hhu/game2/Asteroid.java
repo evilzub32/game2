@@ -20,7 +20,7 @@ public class Asteroid extends Entity {
         }
     }
 
-    private List<Vector2> shape;
+    private Size size;
 
     public Asteroid(double posX, double posY, Size size) {
         super(posX, posY);
@@ -30,6 +30,12 @@ public class Asteroid extends Entity {
         List<Vector2> shape = generateShape(mass);
         setMass(mass);
         setShape(shape);
+        setTurnRate(0.5 + Math.random() * 2);
+        setAngle_deg(Math.random() * 360);
+
+        this.size = size;
+
+        update();
     }
 
     @Override
@@ -44,9 +50,49 @@ public class Asteroid extends Entity {
                 collideElastically(other);
             } else if (other instanceof Shot shot) {
                 shot.shouldBeDeleted();
-                collideElastically(other);
+                explode(shot.getVelocity().normalize());
             }
         }
+    }
+
+    public void explode(Vector2 extraVelocity) {
+        Size newSize = null;
+        if (size == Size.LARGE) {
+            newSize = Size.MID;
+        } else if (size == Size.MID) {
+            newSize = Size.SMALL;
+        } else if (size == Size.SMALL) {
+            setMarkedForDeletion(true);
+            return;
+        }
+
+        PlayField playField = PlayField.getInstance();
+
+        Asteroid newAst = new Asteroid(getPos().x, getPos().y, newSize);
+        newAst.getPos().x = getBoundingBox().rightX + 5;
+        newAst.setVelocity(getVelocity().add(extraVelocity));
+        playField.addEntity(newAst);
+
+        newAst = new Asteroid(getPos().x, getPos().y, newSize);
+        newAst.getPos().x = getBoundingBox().leftX - 5;
+        newAst.setVelocity(getVelocity().add(extraVelocity));
+        playField.addEntity(newAst);
+
+        newAst = new Asteroid(getPos().x, getPos().y, newSize);
+        newAst.getPos().y = getBoundingBox().upperY - 5;
+        newAst.setVelocity(getVelocity().add(extraVelocity));
+        playField.addEntity(newAst);
+
+        newAst = new Asteroid(getPos().x, getPos().y, newSize);
+        newAst.getPos().y = getBoundingBox().lowerY + 5;
+        newAst.setVelocity(getVelocity().add(extraVelocity));
+        playField.addEntity(newAst);
+
+        this.setMarkedForDeletion(true);
+    }
+
+    public void explode() {
+        explode(new Vector2());
     }
 
     private static double generateMass(Size size) {

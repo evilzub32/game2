@@ -32,7 +32,7 @@ public abstract class Entity {
         turnRate = 0;
         angle_deg = 0;
 
-        velocity = new Vector2(0,0);
+        velocity = new Vector2();
 
         pos = new Vector2(posX, posY);
 
